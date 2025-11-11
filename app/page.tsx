@@ -9,16 +9,14 @@ import { Pagination } from './components/Pagination'
 
 
 // Supabase configuration
-/*const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://edluuzlztaawxgvquwom.supabase.co',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkbHV1emx6dGFhd3hndnF1d29tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMTAxNDEsImV4cCI6MjA3MzU4NjE0MX0.kSeUdadiesq6U1EuND_LgNlfkDDR1sKSbtmF0poM9P4'
-)*/
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error('Missing Supabase environment variables. Please check your .env.local file.')
+}
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || 'fallback-url',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'fallback-key'
-)
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 export interface Shop {
   id: number
