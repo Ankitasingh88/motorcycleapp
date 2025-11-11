@@ -35,14 +35,15 @@ export default function RootLayout({
 
 
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+// import { Inter } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({ 
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-inter',
-})
+// Using system fonts as fallback due to build environment restrictions
+// const inter = Inter({
+//   subsets: ['latin'],
+//   display: 'swap',
+//   variable: '--font-inter',
+// })
 
 export const metadata: Metadata = {
   title: {
@@ -89,8 +90,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${inter.variable} smooth-scroll`}>
-      <body className={`${inter.className} antialiased`}>
+    <html lang="en" className="smooth-scroll">
+      <body className="antialiased font-sans">
         {children}
       </body>
     </html>
