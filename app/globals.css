@@ -26,9 +26,31 @@ body {
 }*/
 
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-primary-50: #f0f0ff;
+  --color-primary-100: #e0e0ff;
+  --color-primary-200: #c7c7ff;
+  --color-primary-300: #a3a3ff;
+  --color-primary-400: #7a7aff;
+  --color-primary-500: #5e5eff;
+  --color-primary-600: #4242f5;
+  --color-primary-700: #3333d8;
+  --color-primary-800: #2929ad;
+  --color-primary-900: #252588;
+
+  --color-secondary-50: #faf5ff;
+  --color-secondary-100: #f3e8ff;
+  --color-secondary-200: #e9d5ff;
+  --color-secondary-300: #d8b4fe;
+  --color-secondary-400: #c084fc;
+  --color-secondary-500: #a855f7;
+  --color-secondary-600: #9333ea;
+  --color-secondary-700: #7e22ce;
+  --color-secondary-800: #6b21a8;
+  --color-secondary-900: #581c87;
+}
 
 @layer base {
   :root {
@@ -48,41 +70,57 @@ body {
 @layer components {
   /* Card Hover Effect */
   .card-hover {
-    @apply transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.02];
+    @apply transition-all duration-300;
+    &:hover {
+      @apply shadow-2xl -translate-y-2 scale-[1.02];
+    }
   }
-  
+
   /* Button Styles */
   .btn-primary {
-    @apply bg-gradient-to-r from-primary-500 via-purple-500 to-secondary-500 
-           text-white font-semibold py-3 px-8 rounded-xl 
-           hover:shadow-xl hover:shadow-primary-500/50 
-           transition-all duration-300 hover:-translate-y-1
-           active:translate-y-0 active:shadow-lg;
+    @apply bg-gradient-to-r from-primary-500 via-purple-500 to-secondary-500
+           text-white font-semibold py-3 px-8 rounded-xl
+           transition-all duration-300;
+    &:hover {
+      @apply shadow-xl shadow-primary-500/50 -translate-y-1;
+    }
+    &:active {
+      @apply translate-y-0 shadow-lg;
+    }
   }
-  
+
   .btn-secondary {
-    @apply bg-gray-600 text-white font-semibold py-3 px-8 rounded-xl 
-           hover:bg-gray-700 hover:shadow-lg 
-           transition-all duration-300 hover:-translate-y-1;
+    @apply bg-gray-600 text-white font-semibold py-3 px-8 rounded-xl
+           transition-all duration-300;
+    &:hover {
+      @apply bg-gray-700 shadow-lg -translate-y-1;
+    }
   }
 
   .btn-outline {
     @apply border-2 border-primary-500 text-primary-600 font-semibold py-2 px-6 rounded-lg
-           hover:bg-primary-500 hover:text-white transition-all duration-300;
+           transition-all duration-300;
+    &:hover {
+      @apply bg-primary-500 text-white;
+    }
   }
 
   /* Input Styles */
   .input-field {
     @apply w-full px-4 py-3 border-2 border-gray-300 rounded-xl
-           focus:border-primary-500 focus:ring-4 focus:ring-primary-200
            transition-all duration-200 outline-none;
+    &:focus {
+      @apply border-primary-500 ring-4 ring-primary-200;
+    }
   }
 
   .select-field {
     @apply w-full px-4 py-3 border-2 border-gray-300 rounded-xl
-           focus:border-primary-500 focus:ring-4 focus:ring-primary-200
            transition-all duration-200 outline-none
            bg-white cursor-pointer;
+    &:focus {
+      @apply border-primary-500 ring-4 ring-primary-200;
+    }
   }
 
   /* Badge Styles */
@@ -91,11 +129,11 @@ body {
   }
 
   .badge-primary {
-    @apply badge bg-gradient-to-r from-primary-500 to-purple-600 text-white;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-primary-500 to-purple-600 text-white;
   }
 
   .badge-rating {
-    @apply badge bg-yellow-100 text-yellow-800;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800;
   }
 
   /* Text Truncate */
