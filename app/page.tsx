@@ -9,13 +9,13 @@ import { Pagination } from './components/Pagination'
 
 
 // Supabase configuration
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL 
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY 
 
 // Create client with fallback - will handle errors during data fetching
 const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseKey || 'placeholder-key'
+  supabaseUrl || 'https://jhbesfnbdmfzumpouipl.supabase.co',
+  supabaseKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpoYmVzZm5iZG1menVtcG91aXBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4MjUzNTMsImV4cCI6MjA3ODQwMTM1M30.gtT-nVcTnlzE9Zmidx79w40tYH1sF0UCXmI83i1Dhv4'
 )
 
 export interface Shop {
@@ -68,7 +68,7 @@ export default function Home() {
           .order('rating', { ascending: false, nullsFirst: false })
 
         if (fetchError) throw fetchError
-
+console.log (data)
         setShops(data || [])
         setFilteredShops(data || [])
       } catch (err: any) {
