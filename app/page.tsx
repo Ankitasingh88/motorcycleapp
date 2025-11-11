@@ -1,4 +1,250 @@
-import Image from "next/image";
+'use client'
+
+import { useState, useEffect, useCallback } from 'react'
+import { createClient } from '@supabase/supabase-js'
+import { ShopCard } from './components/Shopcard'
+import { Filters } from './components/Filters'
+import { LoadingState, ErrorState, EmptyState, ShopCardSkeleton } from './components/States'
+import { Pagination } from './components/Pagination'
+
+
+// Supabase configuration
+/*const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://edluuzlztaawxgvquwom.supabase.co',
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkbHV1emx6dGFhd3hndnF1d29tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMTAxNDEsImV4cCI6MjA3MzU4NjE0MX0.kSeUdadiesq6U1EuND_LgNlfkDDR1sKSbtmF0poM9P4'
+)*/
+
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || 'fallback-url',
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'fallback-key'
+)
+
+export interface Shop {
+  id: number
+  name: string
+  city: string | null
+  address: string | null
+  rating: number | null
+  reviews: number | null
+  phone: string | null
+  website: string | null
+  hours: string | null
+  latitude: number | null
+  longitude: number | null
+  created_at?: string
+}
+
+export default function Home() {
+  // Data state
+  const [shops, setShops] = useState<Shop[]>([])
+  const [filteredShops, setFilteredShops] = useState<Shop[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // Filter state
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedCountry, setSelectedCountry] = useState('')
+  const [selectedCity, setSelectedCity] = useState('')
+  const [minRating, setMinRating] = useState('')
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 12
+
+  // Fetch data from Supabase
+  useEffect(() => {
+    async function fetchShops() {
+      try {
+        setLoading(true)
+        setError(null)
+
+        const { data, error: fetchError } = await supabase
+          .from('motorcycle_repairs')
+          .select('*')
+          .order('rating', { ascending: false, nullsFirst: false })
+
+        if (fetchError) throw fetchError
+
+        setShops(data || [])
+        setFilteredShops(data || [])
+      } catch (err: any) {
+        console.error('Error fetching shops:', err)
+        setError(err.message || 'Failed to load data. Please try again.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchShops()
+  }, [])
+
+
+  // Then use it to fetch data
+/*const { data, error } = await supabase
+  .from('motorcycle_repairs')
+  .select('*')*/
+
+  // Apply filters
+  useEffect(() => {
+    let filtered = shops
+
+    // Search filter
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase()
+      filtered = filtered.filter(
+        (shop) =>
+          shop.name?.toLowerCase().includes(searchLower) ||
+          shop.address?.toLowerCase().includes(searchLower) ||
+          shop.city?.toLowerCase().includes(searchLower)
+      )
+    }
+
+    // Country filter
+    if (selectedCountry) {
+      filtered = filtered.filter((shop) => shop.city?.endsWith(selectedCountry))
+    }
+
+    // City filter
+    if (selectedCity) {
+      filtered = filtered.filter((shop) => shop.city === selectedCity)
+    }
+
+    // Rating filter
+    if (minRating) {
+      const minRatingNum = parseFloat(minRating)
+      filtered = filtered.filter(
+        (shop) => shop.rating && shop.rating >= minRatingNum
+      )
+    }
+
+    setFilteredShops(filtered)
+    setCurrentPage(1) // Reset to first page when filters change
+  }, [searchTerm, selectedCountry, selectedCity, minRating, shops])
+
+  // Get unique countries and cities
+  const countries = Array.from(
+    new Set(
+      shops
+        .map((shop) => shop.city?.split(', ').pop())
+        .filter(Boolean) as string[]
+    )
+  ).sort()
+
+  const cities = Array.from(
+    new Set(shops.map((shop) => shop.city).filter(Boolean) as string[])
+  ).sort()
+
+  // Pagination
+  const totalPages = Math.ceil(filteredShops.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const currentShops = filteredShops.slice(startIndex, endIndex)
+
+  // Clear all filters
+  const clearFilters = useCallback(() => {
+    setSearchTerm('')
+    setSelectedCountry('')
+    setSelectedCity('')
+    setMinRating('')
+    setCurrentPage(1)
+  }, [])
+
+  // Handle page change
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [])
+
+  // Retry loading
+  const retryLoad = () => {
+    window.location.reload()
+  }
+
+  // Loading state
+  if (loading) {
+    return <LoadingState />
+  }
+
+  // Error state
+  if (error) {
+    return <ErrorState message={error} onRetry={retryLoad} />
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-primary-500 via-purple-500 to-secondary-500">
+      {/* Header */}
+      <header className="text-center py-12 px-4">
+        <h1 className="text-5xl md:text-6xl font-bold text-white mb-3 drop-shadow-2xl">
+          🏍️ European Motorcycle Repair Directory
+        </h1>
+        <p className="text-xl text-white/90 drop-shadow-lg">
+          Find trusted motorcycle repair shops across Europe
+        </p>
+        <div className="mt-4 flex justify-center gap-4 text-white/80 text-sm">
+          <span>✨ {shops.length.toLocaleString()} Shops</span>
+          <span>🌍 {countries.length} Countries</span>
+          <span>🏙️ {cities.length} Cities</span>
+        </div>
+      </header>
+
+      {/* Filters */}
+      <div className="container-custom mb-8">
+        <Filters
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          selectedCountry={selectedCountry}
+          setSelectedCountry={setSelectedCountry}
+          selectedCity={selectedCity}
+          setSelectedCity={setSelectedCity}
+          minRating={minRating}
+          setMinRating={setMinRating}
+          countries={countries}
+          cities={cities}
+          filteredCount={filteredShops.length}
+          totalCount={shops.length}
+          onClearFilters={clearFilters}
+        />
+      </div>
+
+      {/* Shop Cards */}
+      <div className="container-custom pb-8">
+        {currentShops.length === 0 ? (
+          <EmptyState onClear={clearFilters} />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {currentShops.map((shop) => (
+              <ShopCard key={shop.id} shop={shop} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="container-custom pb-12">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      )}
+
+      {/* Footer */}
+      <footer className="text-center py-8 text-white/80 text-sm">
+        <p>© 2024 Motorcycle Directory. All rights reserved.</p>
+        <p className="mt-2">Made with ❤️ for motorcycle enthusiasts</p>
+      </footer>
+    </div>
+  )
+}
+
+
+
+
+
+/*import Image from "next/image";
 
 export default function Home() {
   return (
@@ -62,4 +308,4 @@ export default function Home() {
       </main>
     </div>
   );
-}
+}*/

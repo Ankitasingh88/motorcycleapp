@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+/*import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -31,4 +31,70 @@ export default function RootLayout({
       </body>
     </html>
   );
+}*/
+
+
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
+
+const inter = Inter({ 
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+})
+
+export const metadata: Metadata = {
+  title: {
+    default: '🏍️ European Motorcycle Repair Directory',
+    template: '%s | Motorcycle Directory'
+  },
+  description: 'Find trusted motorcycle repair shops across Europe. Browse 500+ verified shops in 18 countries with ratings, reviews, and contact information.',
+  keywords: ['motorcycle', 'repair', 'shops', 'europe', 'directory', 'mechanic', 'maintenance'],
+  authors: [{ name: 'Motorcycle Directory' }],
+  creator: 'Motorcycle Directory',
+  publisher: 'Motorcycle Directory',
+  openGraph: {
+    type: 'website',
+    locale: 'en_EU',
+    url: 'https://motorcycle-directory.vercel.app',
+    title: '🏍️ European Motorcycle Repair Directory',
+    description: 'Find trusted motorcycle repair shops across Europe',
+    siteName: 'Motorcycle Directory',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: '🏍️ European Motorcycle Repair Directory',
+    description: 'Find trusted motorcycle repair shops across Europe',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'your-google-site-verification',
+  },
 }
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en" className={`${inter.variable} smooth-scroll`}>
+      <body className={`${inter.className} antialiased`}>
+        {children}
+      </body>
+    </html>
+  )
+}
+
+
